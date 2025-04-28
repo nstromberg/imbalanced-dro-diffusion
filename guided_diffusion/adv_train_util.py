@@ -46,8 +46,10 @@ class AdvTrainLoop:
         adv_init_mag=0.0,
         adv_target_type='original',
         load_from_ema_ckpt="",
+        max_steps=1000,
     ):
         self.model = model
+        self.max_steps = int(max_steps)
         self.diffusion = diffusion
         self.data = data
         self.batch_size = batch_size
@@ -199,6 +201,8 @@ class AdvTrainLoop:
                 if os.environ.get("DIFFUSION_TRAINING_TEST", "") and self.step > 0:
                     return
             self.step += 1
+            if self.step > self.max_steps:
+                break
         # Save the last checkpoint if it wasn't already saved.
         if (self.step - 1) % self.save_interval != 0:
             self.save()
